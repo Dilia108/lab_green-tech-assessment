@@ -19,10 +19,12 @@
 
 ## Starter Lever Table (for your speaker notes):
 
+---
+
 | Lever | Current assumption (honest guess) | Better alternative to explore |
 |---|---|---|
-| Model / size | Large multimodal model called for every image, including clearly benign ones | Route simple/low-risk images to a smaller, cheaper classifier first; only escalate ambiguous ones to the large model |
-| Call pattern (batch, cache, sync) | Synchronous call per image, no batching, no caching of repeated/identical images | Batch low-priority uploads; cache embeddings or decisions for near-duplicate images (same seller, same SKU) |
-| Infra / region / retention | API calls routed to US-East; image data may be stored indefinitely | Switch to EU region (lower grid carbon intensity); set retention policy to purge moderation metadata after 90 days |
+| **Model / Size** | A large, powerful AI model is called for every single image upload — even for clearly harmless product photos | Route simple images to a smaller, cheaper model first and only escalate uncertain ones to the large model. Add a confidence threshold so that if the small model is very sure an image is clean, the large model is skipped entirely. Apply simple rule-based checks before any AI call (e.g. reject blurry or wrongly-sized images using basic code). Consider a smaller model fine-tuned on ClearCart's own violation history, which could be more accurate at a fraction of the energy cost |
+| **Call Pattern** | One API call per image, processed immediately on upload, with no batching and no reuse of previous results | Batch low-priority uploads and cache decisions for near-duplicate images. Use image fingerprinting (hashing) to detect duplicate uploads before any AI is involved — same image gets the same decision with no new API call. Schedule non-urgent batches during off-peak hours when the energy grid is cleaner (e.g. overnight). Make async processing the default and reserve instant moderation for high-priority or premium sellers only |
+| **Infra / Region / Retention** | API calls are routed to a US data center (Virginia), even though ClearCart and its sellers are based in Europe. Moderation data may be kept indefinitely | Switch to a European data center and set a 90-day retention policy for moderation metadata. Go further by choosing a low-carbon region specifically, such as Sweden (AWS eu-north-1), which runs largely on hydropower. If batching is adopted, use carbon-aware scheduling to route jobs to whichever region has the cleanest energy at that moment. Apply a retention policy to the images themselves, not just metadata. Trim API response payloads to only the pass/flag decision, cutting unnecessary data transfer |
 
 ---
