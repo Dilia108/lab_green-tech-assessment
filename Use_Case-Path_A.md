@@ -19,7 +19,6 @@
 
 ## Starter Lever Table (for your speaker notes):
 
----
 
 | Lever | Current assumption (honest guess) | Better alternative to explore |
 |---|---|---|
